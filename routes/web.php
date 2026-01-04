@@ -1,37 +1,58 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Instructor\DashboardController as InstructorDashboard;
+use App\Http\Controllers\Instructor\CourseController as InstructorCourse;
+use App\Http\Controllers\Student\DashboardController as StudentDashboard;
+use App\Http\Controllers\ProfileController;
 
-use App\Http\Controllers\MahasiswaController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PelangganController;
+// --- HALAMAN PUBLIC ---
+Route::get('/', function () { return redirect()->route('login'); });
 
-Route::get('/', function () {
-    return view('welcome');
+// --- AUTHENTICATION ---
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// --- GROUP ADMIN ---
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('categories', CategoryController::class);
+    Route::resource('users', UserController::class);
+    Route::resource('courses', CourseController::class);
 });
 
-Route::get('/pcr', function () {
-    return 'Selamat Datang DI Website Kampus PCR';
+// --- GROUP INSTRUCTOR ---
+Route::middleware(['auth', 'role:instructor'])->prefix('instructor')->name('instructor.')->group(function () {
+
+    // Dashboard
+    Route::get('/dashboard', [InstructorDashboard::class, 'index'])->name('dashboard');
+
+    // Manajemen Kursus
+    Route::resource('courses', InstructorCourse::class);
+
+    // Daftar Siswa 
+    Route::get('/students', function() {
+        return "Halaman Daftar Siswa (Controller belum dibuat)";
+    })->name('students.index');
+
+    // Jika Anda SUDAH punya StudentController, pakai baris di bawah ini dan hapus yang di atas:
+    // Route::get('/students', [App\Http\Controllers\Instructor\StudentController::class, 'index'])->name('students.index');
 });
 
-Route::get('/mahasiswa', function () {
-    return 'Hallo Mahasiswa';
+// --- GROUP STUDENT (DIGABUNG JADI SATU AGAR RAPI) ---
+Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
+    Route::get('/dashboard', [StudentDashboard::class, 'index'])->name('dashboard');
+    Route::get('/course/{course}/learn', [StudentDashboard::class, 'learn'])->name('course.learn');
 });
 
-Route::get('/nama/{param1}', function ($param1 = '') {
-    return 'Nim saya: '.$param1;
+// --- PROFILE ---
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
-
-Route::get('/mahasiswa/{param1}', [MahasiswaController::class, 'show']);
-
-Route::get('/home', [HomeController::class,'index']);
-
-Route::post('question/store', [QuestionController::class, 'store'])
-		->name('question.store');
-
-Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-Route::resource('pelanggan', PelangganController::class);
-Route::resource('users', \App\Http\Controllers\UserController::class);

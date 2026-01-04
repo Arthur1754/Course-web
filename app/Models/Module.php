@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Module extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['course_id', 'title', 'sort_order'];
+
+    // Relasi: Modul milik 1 Kursus
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    // Relasi: Modul punya Banyak Materi (Lesson)
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class)->orderBy('sort_order', 'asc');
+    }
+}

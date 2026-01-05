@@ -1,0 +1,11 @@
+- [ ] Add `browseCourses()` method in `DashboardController` to fetch all courses with instructor and category
+- [ ] Create new view `resources/views/student/browse-courses.blade.php` to display all courses with enroll options
+- [ ] Update "Cari Kursus" button href in `resources/views/student/dashboard.blade.php` to link to `student.browse-courses`
+- [ ] Update "Cari Kursus" button href in `resources/views/student/courses.blade.php` to link to `student.browse-courses`
+=======
+- [x] Add new route `/student/browse-courses` in `routes/web.php`
+- [x] Add `browseCourses()` method in `DashboardController` to fetch all courses with instructor and category
+- [x] Create new view `resources/views/student/browse-courses.blade.php` to display all courses with enroll options
+- [x] Add enroll route and method for students to enroll in courses
+- [ ] Update "Cari Kursus" button href in `resources/views/student/dashboard.blade.php` to link to `student.browse-courses`
+- [ ] Update "Cari Kursus" button href in `resources/views/student/courses.blade.php` to link to `student.browse-courses`

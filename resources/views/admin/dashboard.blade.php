@@ -24,12 +24,8 @@
                                 Selamat Datang, Administrator! 🎉
                             </h4>
                             <p class="mb-4 text-secondary">
-                                Kamu memiliki <span class="fw-bold text-danger">{{ $pendingCourses }} kursus baru</span>
-                                yang menunggu review hari ini. Cek badge profilmu atau kelola kursus sekarang.
+                                Kelola sistem LMS dengan mudah dan efisien.
                             </p>
-                            <a href="{{ route('admin.courses.index') }}" class="btn btn-outline-primary fw-bold shadow-sm px-4">
-                                Review Sekarang
-                            </a>
                         </div>
                         <div class="col-sm-4 text-center d-none d-sm-block">
                             <i class="fas fa-laptop-code fa-8x text-primary" style="opacity: 0.1; transform: scale(1.2);"></i>

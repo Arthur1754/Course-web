@@ -34,33 +34,42 @@
 
                     <div class="mt-auto">
                         @php
+                            $status = $course->pivot->status ?? 'active';
                             $progress = $course->pivot->progress ?? 0;
                         @endphp
 
-                        <div class="d-flex justify-content-between small fw-bold mb-1">
-                            <span class="{{ $progress == 100 ? 'text-success' : 'text-primary' }}">
-                                {{ $progress == 100 ? 'Selesai' : 'Progres' }}
-                            </span>
-                            <span>{{ $progress }}%</span>
-                        </div>
-                        <div class="progress rounded-pill" style="height: 8px;">
-                            <div class="progress-bar rounded-pill {{ $progress == 100 ? 'bg-success' : 'bg-primary' }}"
-                                 role="progressbar"
-                                 style="width: {{ $progress }}%">
+                        @if($status == 'pending')
+                            <div class="text-center">
+                                <i class="fas fa-clock text-warning fa-2x mb-2"></i>
+                                <div class="small fw-bold text-warning mb-1">Menunggu Konfirmasi</div>
+                                <div class="small text-muted">Admin sedang memproses booking Anda</div>
                             </div>
-                        </div>
+                        @else
+                            <div class="d-flex justify-content-between small fw-bold mb-1">
+                                <span class="{{ $progress == 100 ? 'text-success' : 'text-primary' }}">
+                                    {{ $progress == 100 ? 'Selesai' : 'Progres' }}
+                                </span>
+                                <span>{{ $progress }}%</span>
+                            </div>
+                            <div class="progress rounded-pill" style="height: 8px;">
+                                <div class="progress-bar rounded-pill {{ $progress == 100 ? 'bg-success' : 'bg-primary' }}"
+                                     role="progressbar"
+                                     style="width: {{ $progress }}%">
+                                </div>
+                            </div>
 
-                        <div class="mt-4">
-                            @if($progress == 100)
-                                <a href="{{ route('student.certificates') }}" class="btn btn-outline-success w-100 rounded-pill fw-bold">
-                                    <i class="fas fa-certificate me-1"></i> Lihat Sertifikat
-                                </a>
-                            @else
-                                <a href="{{ route('student.course.learn', $course->id) }}" class="btn btn-primary w-100 rounded-pill fw-bold">
-                                    <i class="fas fa-play me-1"></i> Lanjut Belajar
-                                </a>
-                            @endif
-                        </div>
+                            <div class="mt-4">
+                                @if($progress == 100)
+                                    <a href="{{ route('student.certificates') }}" class="btn btn-outline-success w-100 rounded-pill fw-bold">
+                                        <i class="fas fa-certificate me-1"></i> Lihat Sertifikat
+                                    </a>
+                                @else
+                                    {{-- <a href="{{ route('student.course.learn', $course->id) }}" class="btn btn-primary w-100 rounded-pill fw-bold">
+                                        <i class="fas fa-play me-1"></i> Lanjut Belajar
+                                    </a> --}}
+                                @endif
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -73,7 +82,7 @@
                 </div>
                 <h5 class="fw-bold">Belum ada kursus</h5>
                 <p class="text-muted">Anda belum mendaftar ke kursus manapun saat ini.</p>
-                <a href="#" class="btn btn-primary rounded-pill px-4">Cari Kursus</a>
+                <a href="{{ route('student.browse-courses') }}" class="btn btn-primary rounded-pill px-4">Cari Kursus</a>
             </div>
         </div>
         @endforelse

@@ -85,9 +85,9 @@
                                     <i class="fas fa-download me-1"></i> Sertifikat
                                 </button>
                             @else
-                                <a href="{{ route('student.course.learn', $course->id) }}" class="btn btn-primary w-100 rounded-pill fw-bold">
+                                {{-- <a href="{{ route('student.course.learn', $course->id) }}" class="btn btn-primary w-100 rounded-pill fw-bold">
                                     <i class="fas fa-play me-1"></i> Lanjut Belajar
-                                </a>
+                                </a> --}}
                             @endif
                         </div>
                     </div>
@@ -102,7 +102,7 @@
                 </div>
                 <h5 class="fw-bold">Belum ada kursus</h5>
                 <p class="text-muted">Anda belum mendaftar ke kursus manapun saat ini.</p>
-                <a href="#" class="btn btn-primary rounded-pill px-4">Cari Kursus</a>
+                <a href="{{ route('student.browse-courses') }}" class="btn btn-primary rounded-pill px-4">Cari Kursus</a>
             </div>
         </div>
         @endforelse

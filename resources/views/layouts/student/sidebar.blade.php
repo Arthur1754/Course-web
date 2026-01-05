@@ -33,10 +33,10 @@
             </li>
 
             <li>
-                <a href="{{ route('student.certificates') }}"
+                {{-- <a href="{{ route('student.certificates') }}"
                    class="sidebar-link {{ request()->routeIs('student.certificates') ? 'active' : '' }}">
                     <i class="fas fa-certificate me-3"></i>Sertifikat
-                </a>
+                </a> --}}
             </li>
 
             <li class="mt-4 mb-2">

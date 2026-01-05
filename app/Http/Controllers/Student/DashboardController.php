@@ -35,16 +35,16 @@ class DashboardController extends Controller
             abort(403, 'Anda belum terdaftar di kursus ini.');
         }
 
-        // 2. Ambil Bab (Chapters) dan Materi (Lessons)
+        // 2. Ambil Modul dan Materi (Lessons)
         // Kita load eager loading agar query ringan
-        $course->load(['chapters.lessons', 'instructor']);
+        $course->load(['modules.lessons', 'instructor']);
 
-        // 3. Tentukan materi mana yang aktif (Default: Materi pertama dari Bab pertama)
+        // 3. Tentukan materi mana yang aktif (Default: Materi pertama dari Modul pertama)
         $currentLesson = null;
 
-        // Cek apakah kursus memiliki chapter dan lesson
-        if ($course->chapters->isNotEmpty() && $course->chapters->first()->lessons->isNotEmpty()) {
-            $currentLesson = $course->chapters->first()->lessons->first();
+        // Cek apakah kursus memiliki module dan lesson
+        if ($course->modules->isNotEmpty() && $course->modules->first()->lessons->isNotEmpty()) {
+            $currentLesson = $course->modules->first()->lessons->first();
         }
 
         return view('student.course.learn', compact('course', 'currentLesson'));
@@ -56,6 +56,30 @@ class DashboardController extends Controller
         $myCourses = Auth::user()->courses()->with('instructor')->withPivot('progress')->get();
 
         return view('student.courses', compact('myCourses'));
+    }
+
+    // Halaman Browse Kursus (Semua kursus yang tersedia)
+    public function browseCourses()
+    {
+        $courses = Course::with(['instructor', 'category'])->where('status', 'published')->get();
+
+        return view('student.browse-courses', compact('courses'));
+    }
+
+    // Enroll ke kursus
+    public function enroll(Course $course)
+    {
+        $user = Auth::user();
+
+        // Cek apakah sudah terdaftar
+        if ($user->courses->contains($course->id)) {
+            return redirect()->back()->with('error', 'Anda sudah terdaftar di kursus ini.');
+        }
+
+        // Daftarkan siswa ke kursus dengan progress 0
+        $user->courses()->attach($course->id, ['progress' => 0]);
+
+        return redirect()->route('student.courses')->with('success', 'Berhasil mendaftar ke kursus!');
     }
 
     // Halaman Sertifikat

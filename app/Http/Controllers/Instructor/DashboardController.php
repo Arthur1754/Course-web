@@ -17,7 +17,17 @@ class DashboardController extends Controller
     // 2. Ambil data kursus milik instruktur tersebut
     $myCourses = Course::where('user_id', $userId)->get();
 
-    // 3. Kirim variabel $myCourses ke view
-    return view('instructor.dashboard', compact('myCourses'));
+    // 3. Hitung total kursus
+    $totalCourses = Course::where('user_id', $userId)->count();
+
+    // 4. Hitung total siswa unik yang terdaftar di kursus instruktur
+    $courseIds = Course::where('user_id', $userId)->pluck('id');
+    $totalStudents = \DB::table('course_student')
+        ->whereIn('course_id', $courseIds)
+        ->distinct('user_id')
+        ->count('user_id');
+
+    // 5. Kirim variabel ke view
+    return view('instructor.dashboard', compact('myCourses', 'totalCourses', 'totalStudents'));
 }
 }

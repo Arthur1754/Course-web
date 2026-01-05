@@ -40,4 +40,10 @@ class Course extends Model
                     ->withPivot('status', 'progress')
                     ->withTimestamps();
     }
+
+    // Relasi: Kursus memiliki banyak Modul
+    public function modules()
+    {
+        return $this->hasMany(Module::class)->orderBy('sort_order', 'asc');
+    }
 }

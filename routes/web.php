@@ -29,6 +29,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('categories', CategoryController::class);
     Route::resource('users', UserController::class);
     Route::resource('courses', CourseController::class);
+    Route::get('/bookings', [App\Http\Controllers\Admin\BookingController::class, 'index'])->name('bookings.index');
+    Route::post('/bookings/{booking}/confirm', [App\Http\Controllers\Admin\BookingController::class, 'confirm'])->name('bookings.confirm');
     Route::get('/instructor/{id}/give-task', [TaskController::class, 'create'])->name('tasks.create');
     Route::post('/instructor/{id}/give-task', [TaskController::class, 'store'])->name('tasks.store');
 });
@@ -38,10 +40,8 @@ Route::middleware(['auth', 'role:instructor'])->prefix('instructor')->name('inst
     Route::get('/dashboard', [InstructorDashboard::class, 'index'])->name('dashboard');
     Route::resource('courses', InstructorCourse::class);
 
-    // Daftar Siswa (Placeholder)
-    Route::get('/students', function() {
-        return "Halaman Daftar Siswa";
-    })->name('students.index');
+    // Daftar Siswa
+    Route::get('/students', [App\Http\Controllers\Instructor\StudentController::class, 'index'])->name('students.index');
 
     // Route untuk baca tugas (Lebih aman ditaruh di dalam middleware auth/instructor)
     Route::post('/task/{id}/read', [TaskController::class, 'markAsRead'])->name('tasks.read');
@@ -51,8 +51,9 @@ Route::middleware(['auth', 'role:instructor'])->prefix('instructor')->name('inst
 Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentDashboard::class, 'index'])->name('dashboard');
     Route::get('/courses', [StudentDashboard::class, 'courses'])->name('courses');
+    Route::get('/browse-courses', [StudentDashboard::class, 'browseCourses'])->name('browse-courses');
+    Route::post('/enroll/{course}', [StudentDashboard::class, 'enroll'])->name('enroll');
     Route::get('/certificates', [StudentDashboard::class, 'certificates'])->name('certificates');
-    Route::get('/course/{course}/learn', [StudentDashboard::class, 'learn'])->name('course.learn');
 });
 
 // --- PROFILE ---

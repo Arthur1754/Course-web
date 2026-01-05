@@ -1,122 +1,138 @@
+{{-- 1. Pastikan extend ke layout ADMIN (sesuaikan nama file layout adminmu) --}}
 @extends('layouts.admin.app')
 
 @section('content')
 <div class="container-fluid px-4">
+
+    {{-- Header Halaman --}}
     <h1 class="mt-4">Review Kursus</h1>
     <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('admin.courses.index') }}">Kursus</a></li>
-        <li class="breadcrumb-item active">Review</li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.courses.index') }}">Manajemen Kursus</a></li>
+        <li class="breadcrumb-item active">Review #{{ $course->id }}</li>
     </ol>
 
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-file-alt me-1"></i> Detail Materi
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label text-muted">Judul Kursus</label>
-                        <input type="text" class="form-control" value="{{ $course->name }}" readonly disabled>
-                    </div>
+    {{-- Form Utama --}}
+    <form action="{{ route('admin.courses.update', $course->id) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
 
-                    <div class="mb-3">
-                        <label class="form-label text-muted">Deskripsi Singkat</label>
-                        <textarea class="form-control" rows="5" readonly disabled>{{ $course->description }}</textarea>
+        <div class="row">
+            {{-- KOLOM KIRI: Detail Konten Kursus --}}
+            <div class="col-lg-8">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header">
+                        <i class="fas fa-book-open me-1"></i> Detail Kursus
                     </div>
+                    <div class="card-body">
 
-                    <div class="mb-3">
-                        <label class="form-label text-muted">Konten Lengkap</label>
-                        <textarea class="form-control" rows="5" readonly disabled>{{ Str::limit($course->content, 200) }} (Konten lengkap disembunyikan dalam preview ini)</textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        {{-- Thumbnail --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Thumbnail</label>
+                            <div class="border rounded p-2 text-center bg-light">
+                                @if($course->thumbnail)
+                                    <img src="{{ asset('storage/'.$course->thumbnail) }}" alt="Thumbnail" class="img-fluid" style="max-height: 300px;">
+                                @else
+                                    <p class="text-muted my-4">Tidak ada thumbnail</p>
+                                @endif
+                            </div>
+                        </div>
 
-        <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="mb-3 text-center">
-                        @if($course->thumbnail)
-                            <img src="{{ asset('storage/' . $course->thumbnail) }}" class="img-fluid rounded border" style="max-height: 200px;">
-                        @else
-                            <div class="alert alert-secondary">Tidak ada Thumbnail</div>
-                        @endif
+                        {{-- Judul (Read Only) --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Judul Kursus</label>
+                            <input type="text" class="form-control" value="{{ $course->name }}" disabled>
+                        </div>
+
+                        {{-- Kategori --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Kategori</label>
+                            <input type="text" class="form-control" value="{{ $course->category->name ?? '-' }}" disabled>
+                        </div>
+
+                        {{-- Deskripsi --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Deskripsi</label>
+                            <div class="p-3 border rounded bg-light">
+                                {{-- Gunakan {!! !!} jika deskripsi menyimpan format HTML (wysiwyg) --}}
+                                {!! $course->description !!}
+                            </div>
+                        </div>
                     </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Harga</span>
-                            <strong>Rp {{ number_format($course->price) }}</strong>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Kategori</span>
-                            <span>{{ $course->category->name }}</span>
-                        </li>
-                        <li class="list-group-item">
-                            <span>Instruktur:</span><br>
-                            <strong>{{ $course->instructor->name }}</strong>
-                            <br><small class="text-muted">{{ $course->instructor->email }}</small>
-                        </li>
-                    </ul>
                 </div>
             </div>
 
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white">
-                    <i class="fas fa-gavel me-1"></i> Keputusan Admin
-                </div>
-                <div class="card-body text-center">
-                    <h5 class="card-title">Status Saat Ini:</h5>
+            {{-- KOLOM KANAN: Info Instruktur & Aksi --}}
+            <div class="col-lg-4">
 
-                    <div class="mb-3">
-                        @if($course->status == 'published')
-                            <span class="badge bg-success fs-5">PUBLISHED (PUBLISH)</span>
-                        @elseif($course->status == 'rejected')
-                            <span class="badge bg-danger fs-5">REJECTED (DITOLAK)</span>
-                        @elseif($course->status == 'pending')
-                            <span class="badge bg-warning text-dark fs-5">PENDING (BUTUH REVIEW)</span>
-                        @else
-                            <span class="badge bg-secondary fs-5">DRAFT</span>
-                        @endif
+                {{-- Card Info Instruktur --}}
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <i class="fas fa-user-tie me-1"></i> Info Instruktur
                     </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <label class="small text-muted">Nama Instruktur</label>
+                            <div class="fw-bold">{{ $course->instructor->name ?? 'User Tidak Ditemukan' }}</div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="small text-muted">Email</label>
+                            <div>{{ $course->instructor->email ?? '-' }}</div>
+                        </div>
+                    </div>
+                </div>
 
-                    <hr>
+                {{-- Card Status & Harga --}}
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header">
+                        <i class="fas fa-tag me-1"></i> Status & Harga
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="fw-bold d-block">Harga Kursus</label>
+                            <h4 class="text-success">
+                                {{ $course->price == 0 ? 'GRATIS' : 'Rp ' . number_format($course->price, 0, ',', '.') }}
+                            </h4>
+                        </div>
 
-                    <form action="{{ route('admin.courses.update', $course->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
+                        <div class="mb-3">
+                            <label class="fw-bold d-block">Status Saat Ini</label>
+                            @if($course->status == 'published')
+                                <span class="badge bg-success w-100 py-2">PUBLISHED</span>
+                            @elseif($course->status == 'rejected')
+                                <span class="badge bg-danger w-100 py-2">REJECTED</span>
+                            @else
+                                <span class="badge bg-secondary w-100 py-2">DRAFT / PENDING</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Card Aksi (Tombol Approval) --}}
+                <div class="card mb-4 shadow-sm border-warning">
+                    <div class="card-header bg-warning text-dark">
+                        <i class="fas fa-gavel me-1"></i> Aksi Admin
+                    </div>
+                    <div class="card-body">
+                        <p class="small text-muted">
+                            Silakan tinjau kursus ini. Jika sesuai standar, klik Setujui. Jika tidak, klik Tolak.
+                        </p>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" name="action" value="approve" class="btn btn-success btn-lg" {{ $course->status == 'published' ? 'disabled' : '' }}>
-                                <i class="fas fa-check-circle me-1"></i>
-                                {{ $course->status == 'published' ? 'Sudah Publish' : 'SETUJUI (Publish)' }}
+                            {{-- Tombol Approve --}}
+                            <button type="submit" name="action" value="approve" class="btn btn-success btn-lg">
+                                <i class="fas fa-check-circle"></i> Setujui & Publish
                             </button>
 
-                            <button type="submit" name="action" value="reject" class="btn btn-danger btn-lg" {{ $course->status == 'rejected' ? 'disabled' : '' }}>
-                                <i class="fas fa-times-circle me-1"></i>
-                                {{ $course->status == 'rejected' ? 'Sudah Ditolak' : 'TOLAK (Reject)' }}
+                            {{-- Tombol Reject --}}
+                            <button type="submit" name="action" value="reject" class="btn btn-outline-danger">
+                                <i class="fas fa-times-circle"></i> Tolak / Reject
                             </button>
                         </div>
-
-                        <div class="mt-3 text-muted small">
-                            *Kursus yang ditolak tidak akan muncul di halaman depan.
-                        </div>
-
-                        <div class="mt-3 pt-2 border-top">
-                             <a href="#" onclick="event.preventDefault(); if(confirm('Yakin ingin menghapus permanen?')) document.getElementById('delete-form').submit();" class="text-danger small text-decoration-none">
-                                <i class="fas fa-trash"></i> Hapus Kursus Secara Permanen
-                            </a>
-                        </div>
-                    </form>
+                    </div>
                 </div>
+
             </div>
         </div>
-    </div>
+    </form>
 </div>
-
-<form id="delete-form" action="{{ route('admin.courses.destroy', $course->id) }}" method="POST" class="d-none">
-    @csrf
-    @method('DELETE')
-</form>
 @endsection

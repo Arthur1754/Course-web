@@ -60,14 +60,14 @@
             </a>
         </li>
 
-    <li class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+    <li class="menu-item {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
             <a href="{{ route('admin.users.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-group"></i> <div data-i18n="Users">User Management</div>
             </a>
         </li>
 
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Lainnya</span></li>
-        
+
         <li class="menu-item">
             <a href="javascript:void(0);" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="menu-link text-danger">
                 <i class="menu-icon tf-icons bx bx-power-off"></i>

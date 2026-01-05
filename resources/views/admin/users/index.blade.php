@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    
+
     <div class="d-flex align-items-center justify-content-between mt-4 mb-4">
         <div>
             <h1 class="mb-1">User Management</h1>
@@ -18,11 +18,28 @@
         @forelse($users as $user)
         <div class="col-md-6 col-lg-4 col-xl-3">
             <div class="card border-0 shadow-sm h-100 rounded-4 position-relative overflow-hidden group-hover-effect">
-                
+
+                {{-- Garis warna status di atas --}}
                 <div class="position-absolute top-0 start-0 w-100" style="height: 5px; background: {{ $user->role == 'admin' ? '#dc3545' : ($user->role == 'instructor' ? '#ffc107' : '#198754') }};"></div>
 
+                {{-- ========================================================= --}}
+                {{-- [BARU] TOMBOL BERI TUGAS (POJOK KANAN ATAS) --}}
+                {{-- ========================================================= --}}
+                @if($user->role == 'instructor')
+                    <div class="position-absolute top-0 end-0 p-3 mt-1">
+                        {{-- Tombol ini mengarah ke route admin.tasks.create yang sudah kita buat --}}
+                        <a href="{{ route('admin.tasks.create', $user->id) }}"
+                           class="btn btn-light btn-sm shadow-sm rounded-circle text-primary border"
+                           data-bs-toggle="tooltip"
+                           title="Beri Tugas Instruktur">
+                            <i class="fas fa-paper-plane"></i>
+                        </a>
+                    </div>
+                @endif
+                {{-- ========================================================= --}}
+
                 <div class="card-body text-center p-4">
-                    <div class="mb-3 mx-auto d-flex align-items-center justify-content-center rounded-circle shadow-sm" 
+                    <div class="mb-3 mx-auto d-flex align-items-center justify-content-center rounded-circle shadow-sm"
                          style="width: 70px; height: 70px; background-color: #f8f9fa; border: 3px solid white;">
                         <span class="fs-3 fw-bold text-secondary">
                             {{ strtoupper(substr($user->name, 0, 2)) }}
@@ -49,7 +66,7 @@
                     </div>
 
                     @if($user->id != auth()->id())
-                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" 
+                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
                               onsubmit="return confirm('Hapus user {{ $user->name }} secara permanen?');">
                             @csrf
                             @method('DELETE')

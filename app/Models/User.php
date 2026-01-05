@@ -50,4 +50,10 @@ class User extends Authenticatable
                     ->withPivot('progress', 'status')
                     ->withTimestamps();
     }
+
+        public function tasks()
+        {
+        // 'user_id' adalah foreign key di tabel tasks yang menunjuk ke instruktur
+        return $this->hasMany(Task::class, 'user_id');
+        }
 }

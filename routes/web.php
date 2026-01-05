@@ -10,6 +10,7 @@ use App\Http\Controllers\Instructor\DashboardController as InstructorDashboard;
 use App\Http\Controllers\Instructor\CourseController as InstructorCourse;
 use App\Http\Controllers\Student\DashboardController as StudentDashboard;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\TaskController; // Pastikan ini ada
 
 // --- HALAMAN PUBLIC ---
 Route::get('/', function () { return redirect()->route('login'); });
@@ -19,33 +20,34 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+
 // --- GROUP ADMIN ---
+// Prefix URL: /admin/... | Prefix Name: admin.
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('categories', CategoryController::class);
     Route::resource('users', UserController::class);
     Route::resource('courses', CourseController::class);
+    Route::get('/instructor/{id}/give-task', [TaskController::class, 'create'])->name('tasks.create');
+    Route::post('/instructor/{id}/give-task', [TaskController::class, 'store'])->name('tasks.store');
 });
 
 // --- GROUP INSTRUCTOR ---
 Route::middleware(['auth', 'role:instructor'])->prefix('instructor')->name('instructor.')->group(function () {
-
-    // Dashboard
     Route::get('/dashboard', [InstructorDashboard::class, 'index'])->name('dashboard');
-
-    // Manajemen Kursus
     Route::resource('courses', InstructorCourse::class);
 
-    // Daftar Siswa 
+    // Daftar Siswa (Placeholder)
     Route::get('/students', function() {
-        return "Halaman Daftar Siswa (Controller belum dibuat)";
+        return "Halaman Daftar Siswa";
     })->name('students.index');
 
-    // Jika Anda SUDAH punya StudentController, pakai baris di bawah ini dan hapus yang di atas:
-    // Route::get('/students', [App\Http\Controllers\Instructor\StudentController::class, 'index'])->name('students.index');
+    // Route untuk baca tugas (Lebih aman ditaruh di dalam middleware auth/instructor)
+    Route::post('/task/{id}/read', [TaskController::class, 'markAsRead'])->name('tasks.read');
 });
 
-// --- GROUP STUDENT (DIGABUNG JADI SATU AGAR RAPI) ---
+// --- GROUP STUDENT ---
 Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentDashboard::class, 'index'])->name('dashboard');
     Route::get('/course/{course}/learn', [StudentDashboard::class, 'learn'])->name('course.learn');

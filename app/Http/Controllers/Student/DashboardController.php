@@ -13,9 +13,15 @@ class DashboardController extends Controller
     public function index()
     {
         // Menampilkan kursus yang sedang diikuti oleh siswa
-        $myCourses = Auth::user()->courses()->with('instructor')->get();
+        $myCourses = Auth::user()->courses()->with('instructor')->withPivot('progress')->get();
 
-        return view('student.dashboard', compact('myCourses'));
+        // Hitung kursus yang sedang dipelajari (progress < 100)
+        $inProgressCourses = $myCourses->where('pivot.progress', '<', 100)->count();
+
+        // Hitung kursus yang sudah selesai (progress == 100)
+        $completedCourses = $myCourses->where('pivot.progress', '=', 100)->count();
+
+        return view('student.dashboard', compact('myCourses', 'inProgressCourses', 'completedCourses'));
     }
 
     // Halaman Belajar (Masuk ke materi)
@@ -42,5 +48,22 @@ class DashboardController extends Controller
         }
 
         return view('student.course.learn', compact('course', 'currentLesson'));
+    }
+
+    // Halaman Kursus Saya
+    public function courses()
+    {
+        $myCourses = Auth::user()->courses()->with('instructor')->withPivot('progress')->get();
+
+        return view('student.courses', compact('myCourses'));
+    }
+
+    // Halaman Sertifikat
+    public function certificates()
+    {
+        // Ambil kursus yang sudah selesai (progress 100%)
+        $completedCourses = Auth::user()->courses()->with('instructor')->wherePivot('progress', 100)->get();
+
+        return view('student.certificates', compact('completedCourses'));
     }
 }

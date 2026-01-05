@@ -17,10 +17,10 @@ class StudentController extends Controller
         // Ambil semua kursus milik instruktur yang sedang login
         // dan load relasi students
         $instructorId = Auth::id();
-        
+
         // Cara 1: Ambil students dari semua kursus (bisa duplikat jika siswa ambil >1 kursus)
         // Kita ingin menampilkan per pendaftaran (Student A di Course X)
-        
+
         $courses = Course::with(['students' => function($query) {
             $query->orderBy('pivot_created_at', 'desc');
         }])
@@ -29,7 +29,7 @@ class StudentController extends Controller
 
         // Kita bisa flat-kan data ini agar mudah ditampilkan di tabel
         // Atau kirim $courses ke view dan loop di sana (Nested: Course -> Students)
-        
+
         return view('instructor.students.index', compact('courses'));
     }
 }

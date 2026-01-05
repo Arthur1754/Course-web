@@ -26,14 +26,15 @@
             </li>
 
             <li>
-                <a href="{{ route('student.dashboard') }}"
-                   class="sidebar-link {{ request()->routeIs('student.courses.*') ? 'active' : '' }}">
+                <a href="{{ route('student.courses') }}"
+                   class="sidebar-link {{ request()->routeIs('student.courses') ? 'active' : '' }}">
                     <i class="fas fa-book-open me-3"></i>Kursus Saya
                 </a>
             </li>
 
             <li>
-                <a href="#" class="sidebar-link">
+                <a href="{{ route('student.certificates') }}"
+                   class="sidebar-link {{ request()->routeIs('student.certificates') ? 'active' : '' }}">
                     <i class="fas fa-certificate me-3"></i>Sertifikat
                 </a>
             </li>
@@ -43,7 +44,8 @@
             </li>
 
             <li>
-                <a href="#" class="sidebar-link">
+                <a href="{{ route('profile.edit') }}"
+                   class="sidebar-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}">
                     <i class="fas fa-user-circle me-3"></i>Profil Saya
                 </a>
             </li>

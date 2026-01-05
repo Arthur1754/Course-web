@@ -30,7 +30,7 @@ class CourseController extends Controller
         return view('admin.courses.create', compact('categories', 'instructors'));
     }
 
-    // 3. SIMPAN KURSUS
+    // 3. SIMPAN KURSUS (SUDAH DIPERBAIKI AGAR ANTI-DUPLIKAT)
     public function store(Request $request)
     {
         $request->validate([
@@ -42,14 +42,27 @@ class CourseController extends Controller
             'price'       => 'required|integer|min:0',
         ]);
 
+        // --- MULAI LOGIC MEMBUAT SLUG UNIK ---
+        $slug = Str::slug($request->name);
+        $originalSlug = $slug;
+        $count = 1;
+
+        // Cek apakah slug ini sudah ada di database?
+        // Jika ada, tambahkan angka di belakangnya (misal: bahasa-inggris-1)
+        while (Course::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+        // --- SELESAI LOGIC SLUG ---
+
         $data = [
-            'name'         => $request->name,
-            'slug'         => Str::slug($request->name),
-            'category_id'  => $request->category_id,
-            'user_id'      => $request->user_id,
-            'description'  => $request->description,
-            'price'        => $request->price,
-            'status' => $request->has('is_published') ? 'published' : 'draft',
+            'name'        => $request->name,
+            'slug'        => $slug, // <--- Menggunakan slug yang sudah diamankan
+            'category_id' => $request->category_id,
+            'user_id'     => $request->user_id,
+            'description' => $request->description,
+            'price'       => $request->price,
+            'status'      => $request->has('is_published') ? 'published' : 'draft',
         ];
 
         if ($request->hasFile('thumbnail')) {
@@ -86,8 +99,11 @@ class CourseController extends Controller
             $message = 'Kursus telah DITOLAK. Status berubah menjadi Rejected.';
 
         } else {
-            // Jaga-jaga jika ada input aneh
-            return redirect()->back()->with('error', 'Aksi tidak valid.');
+            // Jika admin mengedit data kursus (misal ganti nama/deskripsi)
+            // (Opsional: Tambahkan logika update data di sini jika admin boleh edit konten)
+
+            // Jaga-jaga jika hanya tombol approve/reject
+            return redirect()->back()->with('error', 'Aksi tidak valid atau belum diimplementasikan untuk edit data.');
         }
 
         return redirect()->route('admin.courses.index')->with('success', $message);

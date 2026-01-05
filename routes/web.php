@@ -50,6 +50,8 @@ Route::middleware(['auth', 'role:instructor'])->prefix('instructor')->name('inst
 // --- GROUP STUDENT ---
 Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentDashboard::class, 'index'])->name('dashboard');
+    Route::get('/courses', [StudentDashboard::class, 'courses'])->name('courses');
+    Route::get('/certificates', [StudentDashboard::class, 'certificates'])->name('certificates');
     Route::get('/course/{course}/learn', [StudentDashboard::class, 'learn'])->name('course.learn');
 });
 

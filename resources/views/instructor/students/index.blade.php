@@ -1,64 +1,75 @@
-@extends('layouts.admin.dashboard')
+@extends('layouts.admin.app')
 
 @section('content')
-<div class="row">
-    <div class="col-md-12">
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Daftar Siswa</h1>
-        </div>
+<div class="container-fluid">
 
-        @if($courses->isEmpty())
-        <div class="alert alert-info">
-            Anda belum memiliki kursus atau siswa yang terdaftar.
-        </div>
-        @else
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Siswa di Kursus Anda</h6>
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Daftar Siswa</h1>
+
+        <form class="d-none d-sm-inline-block form-inline ml-auto my-2 my-md-0 mw-100 navbar-search">
+            <div class="input-group">
+                <input type="text" class="form-control bg-white border-0 small shadow-sm" placeholder="Cari siswa..." aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>Nama Siswa</th>
-                                <th>Email</th>
-                                <th>Kursus</th>
-                                <th>Progress</th>
-                                <th>Tanggal Daftar</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($courses as $course)
-                                @foreach($course->students as $student)
-                                <tr>
-                                    <td>{{ $student->name }}</td>
-                                    <td>{{ $student->email }}</td>
-                                    <td>{{ $course->name }}</td>
-                                    <td>
-                                        <div class="progress mb-2">
-                                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ $student->pivot->progress }}%"
-                                                aria-valuenow="{{ $student->pivot->progress }}" aria-valuemin="0" aria-valuemax="100">
-                                                {{ $student->pivot->progress }}%
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>{{ $student->pivot->created_at->format('d M Y') }}</td>
-                                    <td>
-                                        <span class="badge badge-{{ $student->pivot->status == 'active' ? 'success' : 'secondary' }}">
-                                            {{ ucfirst($student->pivot->status) }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            @endforeach
-                        </tbody>
-                    </table>
+        </form>
+    </div>
+
+    <div class="row">
+
+        @forelse($students as $student)
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100 py-3">
+                <div class="card-body text-center">
+
+                    <div class="mb-3">
+                        @if($student->avatar)
+                            <img src="{{ asset('storage/' . $student->avatar) }}"
+                                 class="rounded-circle img-thumbnail"
+                                 style="width: 100px; height: 100px; object-fit: cover;">
+                        @else
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode($student->name) }}&background=4e73df&color=ffffff&size=100"
+                                 class="rounded-circle img-thumbnail shadow-sm"
+                                 alt="{{ $student->name }}">
+                        @endif
+                    </div>
+
+                    <h5 class="font-weight-bold text-dark mb-1">{{ $student->name }}</h5>
+                    <p class="text-muted small mb-3">{{ $student->email }}</p>
+
+                    <div class="d-flex justify-content-center mb-3">
+                        <span class="badge badge-light text-primary px-3 py-2 border">
+                            <i class="fas fa-calendar-alt mr-1"></i>
+                            Join: {{ $student->created_at->format('d M Y') }}
+                        </span>
+                    </div>
+
+                    <div class="mt-2">
+                        <a href="#" class="btn btn-sm btn-outline-primary btn-block rounded-pill">
+                            <i class="fas fa-user mb-1"></i> Lihat Profil
+                        </a>
+                    </div>
+
                 </div>
             </div>
         </div>
-        @endif
+        @empty
+        <div class="col-12 text-center py-5">
+            <div class="text-gray-500 mb-3">
+                <i class="fas fa-users-slash fa-3x"></i>
+            </div>
+            <h5>Belum ada siswa yang mendaftar.</h5>
+        </div>
+        @endforelse
+
     </div>
+
+    <div class="d-flex justify-content-end mt-4">
+        {{ $students->links() }}
+    </div>
+
 </div>
 @endsection

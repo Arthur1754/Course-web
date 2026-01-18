@@ -20,6 +20,7 @@ class User extends Authenticatable
         'role',   // admin, instructor, student
         'avatar', // foto profil (opsional)
         'bio',    // biografi singkat (opsional)
+        'taught_categories', // kategori yang diajar instruktur
     ];
 
     /**

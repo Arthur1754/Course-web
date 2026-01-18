@@ -12,16 +12,27 @@ class DashboardController extends Controller
     // Halaman Dashboard Utama Siswa
     public function index()
     {
-        // Menampilkan kursus yang sedang diikuti oleh siswa
-        $myCourses = Auth::user()->courses()->with('instructor')->withPivot('progress')->get();
+        $user = Auth::user();
 
-        // Hitung kursus yang sedang dipelajari (progress < 100)
+        // 1. KURSUS SAYA
+        // Update: Saya tambah 'category' agar badge kategori muncul di view
+        $myCourses = $user->courses()->with(['instructor', 'category'])->withPivot('progress')->get();
+
+        // Hitung statistik (Opsional, tetap dibiarkan ada)
         $inProgressCourses = $myCourses->where('pivot.progress', '<', 100)->count();
-
-        // Hitung kursus yang sudah selesai (progress == 100)
         $completedCourses = $myCourses->where('pivot.progress', '=', 100)->count();
 
-        return view('student.dashboard', compact('myCourses', 'inProgressCourses', 'completedCourses'));
+        // 2. REKOMENDASI KURSUS (YANG BELUM DIAMBIL)
+        // Logic: Ambil semua course 'published', kecuali ID yang sudah ada di $myCourses
+        $otherCourses = Course::with(['instructor', 'category'])
+            ->where('status', 'published')
+            ->whereNotIn('id', $myCourses->pluck('id')) // Kecualikan yg sudah dibeli
+            ->latest() // Urutkan dari yang terbaru
+            ->take(4)  // Batasi hanya 4 kursus agar rapi di dashboard
+            ->get();
+
+        // Kirim $otherCourses ke view
+        return view('student.dashboard', compact('myCourses', 'inProgressCourses', 'completedCourses', 'otherCourses'));
     }
 
     // Halaman Belajar (Masuk ke materi)
@@ -50,20 +61,25 @@ class DashboardController extends Controller
         return view('student.course.learn', compact('course', 'currentLesson'));
     }
 
-    // Halaman Kursus Saya
+    // Halaman Kursus Saya (List Lengkap)
+// Halaman Kursus Saya (List Lengkap)
     public function courses()
     {
-        $myCourses = Auth::user()->courses()->with('instructor')->withPivot('progress')->get();
+        $user = Auth::user();
 
-        return view('student.courses', compact('myCourses'));
-    }
+        // 1. Ambil Kursus Saya
+        $myCourses = $user->courses()->with(['instructor', 'category'])->withPivot('progress')->get();
 
-    // Halaman Browse Kursus (Semua kursus yang tersedia)
-    public function browseCourses()
-    {
-        $courses = Course::with(['instructor', 'category'])->where('status', 'published')->get();
+        // 2. TAMBAHAN: Ambil Rekomendasi (Kursus lain yang belum dibeli)
+        // Bagian ini wajib ada karena view 'student.courses' membutuhkannya ($otherCourses)
+        $otherCourses = Course::with(['instructor', 'category'])
+            ->where('status', 'published')
+            ->whereNotIn('id', $myCourses->pluck('id'))
+            ->latest()
+            ->take(4)
+            ->get();
 
-        return view('student.browse-courses', compact('courses'));
+        return view('student.courses', compact('myCourses', 'otherCourses'));
     }
 
     // Enroll ke kursus
@@ -86,7 +102,7 @@ class DashboardController extends Controller
     public function certificates()
     {
         // Ambil kursus yang sudah selesai (progress 100%)
-        $completedCourses = Auth::user()->courses()->with('instructor')->wherePivot('progress', 100)->get();
+        $completedCourses = Auth::user()->courses()->with(['instructor', 'category'])->wherePivot('progress', 100)->get();
 
         return view('student.certificates', compact('completedCourses'));
     }

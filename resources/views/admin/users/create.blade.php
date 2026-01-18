@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    
+
     <div class="d-flex align-items-center justify-content-between mt-4 mb-4">
         <div>
             <h1 class="mb-1">Tambah User Baru</h1>
@@ -22,10 +22,10 @@
         <div class="col-lg-8 col-xl-6">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4 p-md-5">
-                    
+
                     <form action="{{ route('admin.users.store') }}" method="POST">
                         @csrf
-                        
+
                         <div class="mb-4">
                             <label class="form-label fw-bold text-secondary">Nama Lengkap</label>
                             <div class="input-group">
@@ -79,4 +79,19 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const roleSelect = document.querySelector('select[name="role"]');
+        const taughtCategoriesField = document.getElementById('taught-categories-field');
+
+        roleSelect.addEventListener('change', function() {
+            if (this.value === 'instructor') {
+                taughtCategoriesField.style.display = 'block';
+            } else {
+                taughtCategoriesField.style.display = 'none';
+            }
+        });
+    });
+</script>
 @endsection

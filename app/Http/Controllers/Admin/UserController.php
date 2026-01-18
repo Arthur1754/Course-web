@@ -21,7 +21,8 @@ class UserController extends Controller
     // 2. CREATE: Form tambah user
     public function create()
     {
-        return view('admin.users.create');
+        $categories = Category::all();
+        return view('admin.users.create', compact('categories'));
     }
 
     // 3. STORE: Simpan user baru
@@ -47,7 +48,8 @@ class UserController extends Controller
     // 4. EDIT: Form edit user
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        $categories = Category::all();
+        return view('admin.users.edit', compact('user', 'categories'));
     }
 
     // 5. UPDATE: Update data user

@@ -10,10 +10,13 @@ use App\Http\Controllers\Instructor\DashboardController as InstructorDashboard;
 use App\Http\Controllers\Instructor\CourseController as InstructorCourse;
 use App\Http\Controllers\Student\DashboardController as StudentDashboard;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\TaskController; // Pastikan ini ada
+use App\Http\Controllers\Admin\TaskController;
+use App\Http\Controllers\BiodataController;
 
 // --- HALAMAN PUBLIC ---
-Route::get('/', function () { return redirect()->route('login'); });
+Route::get('/', function () { return view('home'); });
+Route::get('/biodata', [BiodataController::class, 'show'])->name('biodata');
+Route::post('/biodata', [BiodataController::class, 'store'])->name('biodata.store');
 
 // --- AUTHENTICATION ---
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

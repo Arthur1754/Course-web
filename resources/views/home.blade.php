@@ -49,14 +49,24 @@
     {{-- Konten Utama Halaman Home --}}
     <main class="container my-5">
 
+        {{-- Login Section --}}
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="mb-4">Login sebagai:</h2>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{{ route('login') }}" class="btn btn-danger btn-lg">Admin</a>
+                    <a href="{{ route('login') }}" class="btn btn-success btn-lg">Staff</a>
+                    <a href="{{ route('login') }}" class="btn btn-primary btn-lg">Student</a>
+                </div>
+            </div>
+        </div>
+
         {{-- Hero Section / Jumbotron --}}
         <div class="p-5 mb-4 bg-light rounded-3 text-center">
             <section class="hero-section">
                 <div>
                     <img src="{{ asset('assets/images/test_logo.jpg') }}"
                          alt="download">
-                    <h1 class="display-6 mb-2">{{ $username }}</h1>
-                    <p class="lead mb-0">{{ $last_login }}</p>
                 </div>
             </section>
             <div class="container-fluid py-5">
@@ -73,71 +83,14 @@
         {{-- Features Section --}}
         <div class="row text-center">
             <h2 class="mb-4">Fitur Unggulan Kami</h2>
-            {{-- Fitur 1 --}}
-            <div class="col-lg-4 col-md-6 mb-4">
+            {{-- Make a Account --}}
+            <div class="col-md-6 mx-auto mb-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title">Latihan Login</h5>
-                        <br>
-                        <a href="{{ url('/auth') }}">
-                            <button type="submit" class="btn btn-primary">Login</button>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Fitur 2 --}}
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Submit Form</h5>
-                        <form action="{{ route('question.store') }}" method="POST">
-                            @csrf
-                            <div class="mb-3">
-                                <label class="form-label">Nama</label>
-                                <input type="text" name="nama" class="form-control" value="{{old('nama')}}">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="text" name="email" class="form-control" value="{{old('email')}}">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Pertanyaan</label>
-                                <textarea class="form-control" name="pertanyaan" rows="4" value="{{old('pertanyaan')}}"></textarea>
-                            </div>
-
-                                @if ($errors->any())
-                                    <div class="alert alert-danger">
-                                        <ul>
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endif
-
-                                @if (session('info'))
-                                    <div class="alert alert-info">
-                                        {!! session('info') !!}
-                                    </div>
-                                @endif
-
-                            <a href="D:\Aflah_2TID\laragon-6.0-minimal\www\laravel-web\resources\views\home-question-respon.blade.php">
-                                <button type="submit" class="btn btn-primary">Kirim Pertanyaan</button>
-                            </a>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Fitur 3 --}}
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Tugas Classroom</h5>
-                        <br>
-                        <a href="{{ url('/pegawai') }}">
-                            <button type="submit" class="btn btn-primary">lihat tugas</button>
+                        <h5 class="card-title">Make a Account</h5>
+                        <p>Daftar akun baru untuk mengakses kursus bahasa.</p>
+                        <a href="{{ route('biodata') }}">
+                            <button type="button" class="btn btn-primary">Buat Akun</button>
                         </a>
                     </div>
                 </div>
